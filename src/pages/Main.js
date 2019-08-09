@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import './Main.css';
 
 import api from '../services/api';
@@ -22,31 +23,52 @@ export default function Main({ match }) {
     loadUsers();
   }, [match.params.id]);
 
+  async function handleLike(id) {
+    await api.post(`/devs/${id}/likes`, null, {
+      headers: { user: match.params.id }
+    });
+
+    setUsers(users.filter(user => user._id !== id));
+  }
+
+  async function handleDislike(id) {
+    await api.post(`/devs/${id}/dislikes`, null, {
+      headers: { user: match.params.id }
+    });
+
+    setUsers(users.filter(user => user._id !== id));
+  }
+
   return (
     <div className="main-container">
-      <img src={logo} alt="Tindev Logo" />
-      <ul>
-        <li>
-          <img
-            src="https://avatars0.githubusercontent.com/u/27784094?s=400&u=d8aeeea6592bd96c6cf8415d2a641e60923318a9&v=4"
-            alt=""
-          />
-          <footer>
-            <strong>Caio favoretto</strong>
-            <p>App / Game Developer</p>
-          </footer>
+      <Link to="/">
+        <img src={logo} alt="Tindev Logo" />
+      </Link>
+      {users.length > 0 ? (
+        <ul>
+          {users.map(user => (
+            <li key={user._id}>
+              <img src={user.avatar} alt={user.name} />
+              <footer>
+                <strong>{user.name}</strong>
+                <p>{useEffect.bio}</p>
+              </footer>
 
-          <div className="buttons">
-            <button type="button">
-              <img src={dislike} alt="Dislike" />
-            </button>
+              <div className="buttons">
+                <button type="button" onClick={() => handleDislike(user._id)}>
+                  <img src={dislike} alt="Dislike" />
+                </button>
 
-            <button type="button">
-              <img src={like} alt="Like" />
-            </button>
-          </div>
-        </li>
-      </ul>
+                <button type="button" onClick={() => handleLike(user._id)}>
+                  <img src={like} alt="Like" />
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div className="empty">Acabou :(</div>
+      )}
     </div>
   );
 }
