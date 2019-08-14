@@ -51,7 +51,7 @@ export default function Main({ match }) {
               <img src={user.avatar} alt={user.name} />
               <footer>
                 <strong>{user.name}</strong>
-                <p>{useEffect.bio}</p>
+                <p>{user.bio}</p>
               </footer>
 
               <div className="buttons">
